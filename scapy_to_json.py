@@ -56,12 +56,12 @@ def scapy_to_json(pkt,json_indent=4):
     
     for x in pkt:
         v = list()
-        layerIter = 0
-        while x.getlayer(layerIter) is not None:
+        layer_iter = 0
+        while x.getlayer(layer_iter) is not None:
             # Save the layer fields
-            layerFields = x.getlayer(layerIter).fields
+            layerFields = x.getlayer(layer_iter).fields
             # Save the layer name for future identification
-            layerFields["_layertype"] = x.getlayer(layerIter).name
+            layerFields["_layertype"] = x.getlayer(layer_iter).name
             v.append(fix_encoding(layerFields))
             layerIter+=1
         pkts.append(v)
