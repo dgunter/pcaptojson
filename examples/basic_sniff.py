@@ -23,7 +23,7 @@ THE SOFTWARE.
 '''
 
 from scapy.all import sniff
-from scapy_to_json import scapy_to_json
+from scapytojson import scapy_to_json
 
 
 if __name__ == '__main__':
