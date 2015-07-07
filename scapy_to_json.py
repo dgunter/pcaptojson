@@ -63,6 +63,6 @@ def scapy_to_json(pkt,json_indent=4):
             # Save the layer name for future identification
             layerFields["_layertype"] = x.getlayer(layer_iter).name
             v.append(fix_encoding(layerFields))
-            layerIter+=1
+            layer_iter+=1
         pkts.append(v)
     return dumps(pkts,indent=json_indent)
