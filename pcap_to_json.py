@@ -73,7 +73,7 @@ def packet_to_json(pkt):
         # Save the layer fields
         layerfields = pkt.getlayer(layer_iter).fields
         # Save the layer name for future identification
-        retpacket[pkt.getlayer(layer_iter).name] = layerfields
+        retpacket[pkt.getlayer(layer_iter).name] = fix_encoding(layerfields)
         layer_iter+=1
 
     return retpacket
