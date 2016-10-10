@@ -46,7 +46,9 @@ def fix_encoding(d,target_encoding='utf-8'):
             
     return out_dict
 
-def scapy_to_json(pkt,json_indent=4):
+
+
+def pcap_to_json(pkt,json_indent=4):
     '''
     @summary: Converts a collection of scapy packets to a json encodable object
     @var pkt: The scapy packet collection to encode
@@ -55,14 +57,23 @@ def scapy_to_json(pkt,json_indent=4):
     pkts = list()
     
     for x in pkt:
-        v = list()
-        layer_iter = 0
-        while x.getlayer(layer_iter) is not None:
-            # Save the layer fields
-            layerFields = x.getlayer(layer_iter).fields
-            # Save the layer name for future identification
-            layerFields["_layertype"] = x.getlayer(layer_iter).name
-            v.append(fix_encoding(layerFields))
-            layer_iter+=1
-        pkts.append(v)
+        pkts.append(packet_to_json(x))
+        
     return dumps(pkts,indent=json_indent)
+
+def packet_to_json(pkt):
+    '''
+    @summary: Converts a collection of scapy packets to a json encodable object
+    @var pkt: The scapy packet collection to encode
+    @var json_indent: Controls formatting within the JSON encoded data
+    '''    
+    retpacket = dict()
+    layer_iter = 0
+    while pkt.getlayer(layer_iter) is not None:
+        # Save the layer fields
+        layerfields = pkt.getlayer(layer_iter).fields
+        # Save the layer name for future identification
+        retpacket[pkt.getlayer(layer_iter).name] = layerfields
+        layer_iter+=1
+
+    return retpacket
