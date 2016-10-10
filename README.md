@@ -1,5 +1,5 @@
-# scapytojson
-This library converts scapy packet captures into JSON. Non JSON encodable data is converted to base64 to fix any json encoding issues. The name of the scapy frame is stored in the _layertype key.
+# pcaptojson
+This library converts scapy packet captures into JSON. Non JSON encodable data is converted to base64 to fix any json encoding issues. The name of the scapy frame is stored as the key and the packet data is stored in the value pair.
 
 Quick Example:
 ```python
