@@ -23,7 +23,17 @@ THE SOFTWARE.
 '''
 
 from base64 import b64encode
-from json import dumps
+from scapy.all import rdpcap
+import sys
+
+def save_to_mongo(client,pkt):
+    db = client.pcap
+    postencodepkt = fix_encoding(pkt)
+    try:
+        db.packets.insert_one(postencodepkt)
+    except:
+        e = sys.exc_info()[0]
+        print("Error: " + str(e))
 
 def fix_encoding(d,target_encoding='utf-8'):
     '''
@@ -42,24 +52,32 @@ def fix_encoding(d,target_encoding='utf-8'):
                 out_dict[k] = v
             except UnicodeError:
                 # Base64 encode value to avoid json errors
-                out_dict[k] = b64encode(v)
-            
+                try:
+                    out_dict[k] = b64encode(v)
+                except:
+                    pass
+    # Other packet fixes
+    if "DNS" in out_dict:
+        out_dict["DNS"]["qd"] = str(out_dict.get("DNS").get("qd"))
+        out_dict["DNS"]["an"] = str(out_dict.get("DNS").get("an"))
+
     return out_dict
 
 
 
-def pcap_to_json(pkt,json_indent=4):
+def pcap_to_json(pkt):
     '''
     @summary: Converts a collection of scapy packets to a json encodable object
     @var pkt: The scapy packet collection to encode
     @var json_indent: Controls formatting within the JSON encoded data
+    @return: Returns a python list of packets
     '''
     pkts = list()
     
     for x in pkt:
         pkts.append(packet_to_json(x))
         
-    return dumps(pkts,indent=json_indent)
+    return pkts
 
 def packet_to_json(pkt):
     '''
@@ -77,3 +95,8 @@ def packet_to_json(pkt):
         layer_iter+=1
 
     return retpacket
+
+def load_pcap_to_mongodb(client,f):
+    pcapdata = rdpcap(f)
+    for pkt in pcap_to_json(pcapdata):
+        save_to_mongo(client, pkt)
